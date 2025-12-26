@@ -333,6 +333,11 @@ func ConvertOpenAIRequestToGemini(modelName string, inputRawJSON []byte, _ bool)
 							}
 						} else {
 							fnRaw = renamed
+							// Clean the schema for Gemini compatibility (flatten types, etc.)
+							if schema := gjson.Get(fnRaw, "parametersJsonSchema"); schema.Exists() {
+								cleaned := util.CleanJSONSchemaForAntigravity(schema.Raw)
+								fnRaw, _ = sjson.SetRaw(fnRaw, "parametersJsonSchema", cleaned)
+							}
 						}
 					} else {
 						var errSet error

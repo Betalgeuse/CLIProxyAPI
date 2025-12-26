@@ -240,7 +240,7 @@ func flattenTypeArrays(jsonStr string) string {
 		var nonNullTypes []string
 		for _, item := range res.Array() {
 			s := item.String()
-			if s == "null" {
+			if strings.EqualFold(s, "null") {
 				hasNull = true
 			} else if s != "" {
 				nonNullTypes = append(nonNullTypes, s)
@@ -250,6 +250,11 @@ func flattenTypeArrays(jsonStr string) string {
 		firstType := "string"
 		if len(nonNullTypes) > 0 {
 			firstType = nonNullTypes[0]
+		}
+
+		if hasNull {
+			// Log the fix for debugging
+			fmt.Printf("Fixed nullable type at %s: replaced with %s\n", p, firstType)
 		}
 
 		jsonStr, _ = sjson.Set(jsonStr, p, firstType)
